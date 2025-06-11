@@ -2,8 +2,6 @@ OUT_DIR ?= .
 $(info "OUT_DIR : $(OUT_DIR)")
 
 TUNING_SUBDIR := $(shell dirname $(lastword $(MAKEFILE_LIST)))
-TUNING_SUBDIR_DTS := $(TUNING_SUBDIR)/imx290
-TUNING_SUBDIR_DTS_1 := $(TUNING_SUBDIR)/ov08a10
 SRCS = $(shell find $(TUNING_SUBDIR) -name '*.cpp')
 OBJS = $(patsubst %.cpp,%.o,$(SRCS))
 
@@ -11,8 +9,6 @@ OBJS = $(patsubst %.cpp,%.o,$(SRCS))
 
 ISP_ROOT_DIR := $(TUNING_SUBDIR)/..
 LOCAL_INCLUDES := -I$(ISP_ROOT_DIR)/include/
-LOCAL_INCLUDES += -I$(TUNING_SUBDIR_DTS)
-LOCAL_INCLUDES += -I$(TUNING_SUBDIR_DTS_1)
 
 CFLAGS += -I ./include/
 CFLAGS += -I ./kernel-headers/
