@@ -12,6 +12,7 @@ LOCAL_INCLUDES+= -I$(ISP_ROOT_DIR)/sensor_calibration/imx290/
 LOCAL_INCLUDES+= -I$(ISP_ROOT_DIR)/sensor_calibration/ov08a10/
 LOCAL_INCLUDES+= -I$(ISP_ROOT_DIR)/sensor_calibration/imx415/
 LOCAL_INCLUDES+= -I$(ISP_ROOT_DIR)/sensor_calibration/imx678/
+LOCAL_INCLUDES+= -I$(ISP_ROOT_DIR)/sensor_calibration/imx585/
 LOCAL_INCLUDES+= -I$(ISP_ROOT_DIR)/lens/dw9714/
 
 CFLAGS += -I ./include/
