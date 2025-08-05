@@ -33,7 +33,6 @@
 #include "ov08a10_api.h"
 #include "imx415_api.h"
 #include "imx678_api.h"
-#include "imx585_api.h"
 #include "logs.h"
 
 
@@ -109,29 +108,11 @@ struct sensorConfig imx678Cfg = {
     imx678Cfg.type             = sensor_raw,
 };
 
-struct sensorConfig imx585Cfg = {
-    imx585Cfg.expFunc.pfn_cmos_fps_set = cmos_fps_set_imx585,
-    imx585Cfg.expFunc.pfn_cmos_get_alg_default = cmos_get_ae_default_imx585,
-    imx585Cfg.expFunc.pfn_cmos_alg_update = cmos_alg_update_imx585,
-    imx585Cfg.expFunc.pfn_cmos_again_calc_table = cmos_again_calc_table_imx585,
-    imx585Cfg.expFunc.pfn_cmos_dgain_calc_table = cmos_dgain_calc_table_imx585,
-    imx585Cfg.expFunc.pfn_cmos_inttime_calc_table = cmos_inttime_calc_table_imx585,
-    imx585Cfg.cmos_set_sensor_entity = cmos_set_sensor_entity_imx585,
-    imx585Cfg.cmos_get_sensor_calibration = cmos_get_sensor_calibration_imx585,
-    imx585Cfg.sensorWidth      = 3840,
-    imx585Cfg.sensorHeight     = 2160,
-    imx585Cfg.sensorName       = "imx585",
-    imx585Cfg.wdrFormat        = MEDIA_BUS_FMT_SRGGB10_1X10,
-    imx585Cfg.sdrFormat        = MEDIA_BUS_FMT_SRGGB10_1X10,
-    imx585Cfg.type             = sensor_raw,
-};
-
 struct sensorConfig *supportedCfgs[] = {
     &imx290Cfg,
     &imx415Cfg,
     &ov08a10Cfg,
     &imx678Cfg,
-    &imx585Cfg,
 };
 
 struct sensorConfig *matchSensorConfig(media_stream_t *stream) {
