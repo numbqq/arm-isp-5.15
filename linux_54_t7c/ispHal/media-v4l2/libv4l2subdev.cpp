@@ -30,8 +30,8 @@
 int v4l2_subdev_open(struct media_entity *entity)
 {
     if (entity->fd != -1) {
-        media_dbg(entity->media,
-              "%s: fd %d \n", __func__, entity->fd);
+        //media_dbg(entity->media,
+        //      "%s: fd %d \n", __func__, entity->fd);
         return 0;
     }
 

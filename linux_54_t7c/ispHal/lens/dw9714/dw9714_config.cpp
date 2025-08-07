@@ -56,7 +56,7 @@ void vcm_set_ent_dw9714(struct media_entity *ent)
 
 void vcm_set_pos_dw9714(uint32_t ctx, uint16_t position)
 {
-    INFO("CY: dw9714w set pos: %u\n", position);
+    //INFO("CY: dw9714w set pos: %u\n", position);
     int ret = 0;
 
 	struct v4l2_ext_control pos;
@@ -69,13 +69,11 @@ void vcm_set_pos_dw9714(uint32_t ctx, uint16_t position)
 	ret = v4l2_subdev_set_ctrls(info->ent, &pos, 1);
 	if (ret < 0)
 		ERR("dw9714w set pos fail");
-	else
-		INFO("dw9714w set pos success");
 }
 
 uint8_t vcm_is_moving_dw9714(uint32_t ctx)
 {
-	INFO("CY: dw9714w moving\n");
+	//INFO("CY: dw9714w moving\n");
 	int ret = 0;
 	struct dw9714_info *info = dw9714_get_info();
 	struct v4l2_control ctrl;
