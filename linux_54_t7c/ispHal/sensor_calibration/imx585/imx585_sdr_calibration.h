@@ -171,25 +171,42 @@ static int32_t _CALIBRATION_AE_CTL[32] = {
 };
 
 //aisp_highlight_det_t
-static int32_t _CALIBRATION_HIGHLIGHT_DETECT[18] = {
-    1000,    /**< u24, when global oversat pixel count more than this thd, it maybe judge as highlight scene*/
-    60000,   /**< u24, when global oversat pixel count more than this thd, it maybe judge as highlight scene*/
-    102,    /**< u10, when oversat pixel count less than this thd, it maybe judge as highlight scene*/
-    1023,   /**< u10, when oversat pixel count less than this thd, it maybe judge as highlight scene*/
-    700,    /**< u10, when oversat pixel count less than this thd, it maybe judge as highlight scene*/
-    251,    /**< u8,entry ratio0, when local bin4 pixel count more than this thd, it maybe judge as highlight scene*/
-    20,     /**< u8,entry ratio1,when local bin4 pixel count more than this thd, it maybe judge as highlight scene*/
-    0,      /**< u8,entry ratio2,when local bin4 pixel count more than this thd, it maybe judge as not highlight scene*/
-    2,     //u4 block num, height and width is the same;
-    2,     //u4 block num delat, height and width is the same;
-    128,   // u8,exit ratio0, when local bin4 pixel count more than this thd, it maybe judge as highlight scene*/
-    24,    // u8,exit ratio1, when local bin4 pixel count more than this thd, it maybe judge as highlight scene*/
-    64,    // u8,exit global ratio, when local bin4 pixel count more than this thd, it maybe judge as highlight scene*/
-    235,   // u8, highlight strength,220
-    2,     // u4, scene change thd
-    7,     //u8 attenuation thd
-    5,     // highlight delay
-    0,     //highlihgh enable
+static int32_t _CALIBRATION_HIGHLIGHT_DETECT[27] = {
+    //highlight all
+    0,                  /**< u1, highlight enable, 0:disable; 1:enable */
+    1,                  /**< u1, highlight mode, 0: manual, 1: auto */
+    128,                /**< u8, manual highlight strength,range(0,255),recommend is (0,230), default is 128  */
+    // highlight auto
+    0,                  /**< u1, auto highlight car enable, if enable, when detected car light scene, will do highlight suppressive */
+    128,                /**< u8, auto highlight car strength, range(0,255),recommend is (0,230), default is 128  **/
+    0,                  /**< u1, auto highlight window enable, if enable, when detected window scene, will do highlight suppressive */
+    128,                /**< u8, auto highlight window strength, range(0,255),recommend is (0,128), default is 128 **/
+    //backlight compensation
+    0,                  /**< u1,backligh compensation enable, 0:disable;1:enable */
+    128,                /**< u8, backlight compensation strength,range(0,255),recommend is (0,230), default is 128  */
+    //global
+    102,                /**< u10, is used for highcontrast detect,the larger the value, the more difficult it is to detect as high-contrast scenes,default is 102 */
+    1023,               /**< u12, is used for highcontrast detect,the smaller the value, the more difficult it is to detect as high-contrast scenes,default is 1023 */
+    700,                /**< u10, is used for highcontrast detect,the larger the value, the more difficult it is to detect as high-contrast scenes,default is 700 */
+    //local
+    230,                /**< u8, the ratio0 to entry car light sense, the larger the vlaue, the more difficult to entry car light scene,default is 230*/
+    20,                 /**< u8, the ratio1 to entry car light sense, the larger the vlaue, the more difficult to entry car light scene,default is 20*/
+    0,                  /**< u8, the ratio2 to entry car light sense, the larger the vlaue, the more difficult to entry car light scene,default is 0*/
+    2,                  /**< u4, local block threshold, if highlight area more than blk0xblk0, and less than (blk0+delta)x(blk0+delta),if no consider attenuation, it is car light scene,default is 2 */
+    2,                  /**< u4, local block delta,if highlight area more than blk0xblk0, and less than (blk0+delta)x(blk0+delta),if no considerattenuation, it is car light scene,default is 2*/
+    128,                /**< u8, the ratio0 to exit car light sense, the smaller the vlaue, the more difficult to exit,default is 128*/
+    24,                 /**< u8, the ratio1 to exit car light sense, the smaller the vlaue, the more difficult to exit,default is 24*/
+    5,                  /**< u8, auto highlight delay, default is 5*/
+    10,                 /**< u5, auto highlight sense change threshold , default is 10  */
+    //attenuation
+    1,                  /**< u1, highlight attenuation enable, is used for car light detect, 0: disable, 1:enable */
+    7,                  /**< u8, highlight attenuation threshold, is used for car light detect, default is 7*/
+    6,                  /**< u4, highlight attenuation count, is used for car light detect, default is 6, max is 8*/
+    //lowlight
+    1,                  /**< u1, lowlight enable, 0: disable, 1:enable */
+    20,                 /**< u5, 1: lowlight strength, default is 16 */
+    //debug
+    0,                  /**< u2, 1: print highlight/backlight parameters, 2, print car detect parameters,default is 0 */
 };
 
 static int32_t _CALIBRATION_AE_CORR_LUT[64] =  {128,128, 128, 128, 115, 100, 85, 75, 60, 50, 50};
@@ -229,21 +246,14 @@ static uint8_t _CALIBRATION_AE_WEIGHT_T[15][17] = {
 };
 
 //aisp_dn_det_t
-static int32_t _CALIBRATION_DAYNIGHT_DETECT[14] = {
+static int32_t _CALIBRATION_DAYNIGHT_DETECT[7] = {
     0,    //light_control; 1:0n, 0: off
-    0,    // hist_stat_mode; 0: average based AE, 1: weight
-    120,  // predict_day_thr;  default is 50
-    60,   // predict_night_thr; default is 50
-    8,    // dn_det_tran_ratio; default 16/128
-    240,  // dn_det_day_thr; default 60
-    240,  // dn_det_night_thr;  default 240
-    2000, // dn_det_light_ct_low;
-    5000, // dn_det_light_ct_high;
-    1023, //dn_wdr_mean_ratio
-    300, // dn_rg_blk_sum_thr
-    400, //dn_rg_thr
-    400, //dn_bg_thr
-    0, //print_debug 0:not print 1:print
+    0,    // status;
+    70,   /**< u10, day brightness threshold, default is 70 */
+    2500, /**< u10, night ir brightness threshold, default is 2500 */
+    250,  /**< u10, night ir visible_light/IR threshold, default is 250*/
+    2000, /**< u10, night light brightness threshold, default is 2000*/
+    0,    /**< u1, daynight debug enable, default is 0*/
 };
 
 //aisp_af_t
@@ -1019,7 +1029,7 @@ static uint16_t _CALIBRATION_LTM_SATUR_LUT[63] = {
 };
 
 //aisp_lc_t
-static int32_t _CALIBRATION_LC_CTL[14] = {
+static int32_t _CALIBRATION_LC_CTL[16] = {
     1,  //lc_auto_enable
     1, //lc_blkblend_mode
     6, //lc_lmtrat_minmax
@@ -1031,9 +1041,11 @@ static int32_t _CALIBRATION_LC_CTL[14] = {
     0,  //lc_str_fixed
     2,  //lc_damper64
     63, //lc_nodes_alpha;
+	64, //lc_final_gain
     90, //u7, lc_single_bin_th, 0-100
     0,  //lc_single_bin_prot_en
     16, //u7, lc_single_bin_prot_strgth, 0 is strongest protection, 64 is without protection, max is 64
+	0,  //u7, lc_ymaxv_lmt, limit the height of ymaxV from y=x, max is 64, 0: unrestricted; 64: ymaxV = maxV
 };
 
 static int32_t _CALIBRATION_LC_STRENGTH[ISO_NUM_MAX][2] = {
@@ -1605,12 +1617,15 @@ static uint16_t _CALIBRATION_NOISE_PROFILE[9][16] =
 static uint8_t _CALIBRATION_FPNR[2048*2*5] = {0};
 
 //aisp_awb_info_t
-static uint32_t _CALIBRATION_AWB_PRESET[12] =
+static uint32_t _CALIBRATION_AWB_PRESET[15] =
 {
     0,
     457,    //awb_sys_r_gain;
     256,    //awb_sys_g_gain;
     436,    //awb_sys_b_gain;
+    560,    //awb_sys_r_gain_comp;
+    256,    //awb_sys_g_gain_comp;
+    506,    //awb_sys_b_gain_comp;
     5563,   //awb_sys_ct;
     20,     //awb_sys_cdiff;
     5000,
