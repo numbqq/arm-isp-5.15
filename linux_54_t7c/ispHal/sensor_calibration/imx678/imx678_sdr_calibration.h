@@ -11,7 +11,7 @@
 
 namespace Imx678SdrCalibration {
 //calibration_version
-static int32_t _CALIBRATION_VERSION[1] = {20230815};
+static int32_t _CALIBRATION_VERSION[1] = {20250828};
 
 //aisp_top_ctl_t
 static int32_t _CALIBRATION_TOP_CTL[50] = {
@@ -29,7 +29,7 @@ static int32_t _CALIBRATION_TOP_CTL[50] = {
     1, // sqrt_eotf enable 0:off 1:on
     0, // lcge enable 0:off 1:on
     1, // pdpc enable 0:off 1:on
-    0, // cac enable 0:off 1:on
+    1, // cac enable 0:off 1:on
     1, // rawcnr enable 0:off 1:on
     1, // snr1 enable 0:off 1:on
     1, // mc_tnr enable 0:off 1:on
@@ -141,9 +141,9 @@ static int32_t _CALIBRATION_AE_CTL[32] = {
     0,  //ae exposure strategy, 0: none mode, 1: outdoor mode, 2:indoor mode
     0,  // ae route strategy, 0: exposure priority, 1: gain priority 2: external ae route
     3,  //ae route deflicker mode, 0: none, 1: anti-50hz, 2: anti-60hz, 3: auto detected
-    30,   //exposure convergence speed [0, 128]
+    48,   //exposure convergence speed [0, 128]
     128,  //ae global luma target compensation
-    236,  //ae luma target srgb curve
+    170,  //ae luma target srgb curve
     60,   //ae luma wdr target
     0,    //low light enhancement mode, 0: adjust exposure 1: adjust curve
     256,  //[0,256] low light enhancement strength
@@ -151,20 +151,20 @@ static int32_t _CALIBRATION_AE_CTL[32] = {
     16,    // [0,1024] high light reduce trigger threshold
     128,    // [0,1024] high light reduce strength
     10,   //ae tolerance
-    1, //ae delay adjust enable
+    0, //ae delay adjust enable
     10, //ae delay frame count
     100, //ae delay adjust tolerance
-    (2<<12), //WDR mode only: ae WDR mode low light threshold by log2 value of gain
+    400, //WDR mode only: ae WDR mode low light threshold, use ISO representation, ISO = times * 100
     77,   //WDR mode only: Max percentage of clipped pixels for long exposure: WDR mode only: 256 = 100% clipped pixels
     15,   //WDR mode only: Time filter for exposure ratio
     0,   //reduce fps feature enable.
-    15*256,        //target fps of reduce frame rates.
-    (4<<12),   //trigger threshold of the reduce fps, write gain log2 value.
-    (1<<10),   //lag threshold of the reduce fps, write gain log2 value.
-    (0<<12),        // max isp gain limit, exp: x4 = log2(4)<<12 = 2<<12
-    (1000<<12),     // max shutter time limit, exp:  1000ms = 1000<<12
-    (28672),       // max total gain limit, exp:x1024 = log2(1024)<<12 = 10<<12, 54db = (54/6)<<12 = 9<<12
-    (16<<6),       // max exposure ratio limit, exp: x128 = 128<<6
+    15,        //target fps of reduce frame rates.
+    1600,   //trigger threshold of the reduce fps, use ISO representation, ISO = times * 100.
+    50,   //lag threshold of the reduce fps, use ISO representation, (trigger threshold + lag threshold) or (trigger threshold - lag threshold).
+    200,        // max isp gain limit, use ISO representation, ISO = times * 100
+    1000000,     // max shutter time limit, this is absolute time, unit is us
+    3200,       // max total gain limit, use ISO representation, ISO = times * 100
+    16,       // max exposure ratio limit, this is times.
     (200*(1<<10)),  //  Light intensity at full exposure and zero gain , exp: 128lux = 128*(1<<10)
     2,       //feedback delay frame numbers of stats info in current system
     0,       //ae debug:bit[0] target, [1] ratio, [2] exposure calculate
@@ -209,9 +209,9 @@ static int32_t _CALIBRATION_HIGHLIGHT_DETECT[27] = {
     0,                  /**< u2, 1: print highlight/backlight parameters, 2, print car detect parameters,default is 0 */
 };
 
-static int32_t _CALIBRATION_AE_CORR_LUT[64] =  {128, 128, 90, 70, 50, 45, 36, 20, 20, 20};
+static int32_t _CALIBRATION_AE_CORR_LUT[64] =  {128, 128,128, 128, 90, 70, 50, 45, 36, 20, 20, 20};
 
-static int32_t _CALIBRATION_AE_CORR_POS_LUT[64] = {41516+(0<<12), 41516+(1<<12), 41516+(2<<12), 41516+(3<<12), 41516+(4<<12), 41516+(5<<12),41516+(6<<12),41516+(7<<12),41516+(8<<12),41516+(9<<12)};
+static int32_t _CALIBRATION_AE_CORR_POS_LUT[64] = {38497+(0<<12),42593+(0<<12),45603+(0<<12), 45603+(1<<12), 45603+(2<<12), 45603+(3<<12), 45603+(4<<12), 45603+(5<<12),45603+(6<<12),45603+(7<<12),45603+(8<<12),45603+(9<<12)};
 
 static int32_t _CALIBRATION_AE_ROUTE[1+2*16] = {
 /* shuttertime  | gain*/
@@ -409,7 +409,7 @@ static uint16_t _CALIBRATION_DPC_S_ADJ[ISO_NUM_MAX][12] = {
 //aisp_wdr_t
 static int32_t _CALIBRATION_WDR_CTL[35] = {
     // 1) wdr hr regs
-    1,                              // u1, WDR motion detection enable,0: disable, 1: enable,
+    0,                              // u1, WDR motion detection enable,0: disable, 1: enable,
     0,                              // u1, Pixel value wi/wo blc mode in MD,0: pixel value without blc for MD threshold calculation, 1: pixel value with blc for MD threshold calculation,
     0,                              // u2, Check saturation mode in MD,0:  check G & C with blc, 1: check G & C without blc, 2: check G & C with blc*, 3: check G & C without blc*,
     0,                              // u1, Motion map mode,0: final map determined by Gdiff, 1: final map determined by MAX3(Gmap, Rmap, Bmap),
@@ -429,7 +429,7 @@ static int32_t _CALIBRATION_WDR_CTL[35] = {
     0,                              // s8, Hi weight offset[0] for MD,
     0,                              // s8, Hi weight offset[0] for MD,
     // 3) fw regs for motion detection
-    1,                              // u1, auto enable
+    0,                              // u1, auto enable
     0,                              // u1, MD saturation thd calc mode, 0: user defined; 1: firmware calculation,
     0,                              // u1, MD weight calculation mode, 0: user defined; 1: fw calculation
     0,                              // s8, user defined gr saturation margin for motion detection
@@ -900,12 +900,12 @@ static uint16_t _CALIBRATION_DMS_ADJ[ISO_NUM_MAX][3] = {
 //aisp_ccm_t->ccm_str
 static uint32_t _CALIBRATION_CCM_ADJ[ISO_NUM_MAX][1] = {
 /* Color Correct strength */
-    {128,}, //x1 gain
-    {128,}, //x2 gain
-    {128,}, //x4 gain
-    {128,}, //x8 gain
-    {128,}, //x16 gain
-    {128,}, //x32 gain
+    {110,}, //x1 gain
+    {110,}, //x2 gain
+    {110,}, //x4 gain
+    {110,}, //x8 gain
+    {110,}, //x16 gain
+    {100,}, //x32 gain
     {100,}, //x64 gain
     {80,}, //x128 gain
     {80,}, //x256 gain
@@ -919,22 +919,22 @@ static int32_t _CALIBRATION_CNR_CTL[6] = {
     15, //cnr_map_ythd0
     15, //cnr_map_ythd1
     12, //cnr_map_norm
-    16, //cnr_map_str
+    10, //cnr_map_str
 };
 
 //aisp_cnr_adj_t
 static uint16_t _CALIBRATION_CNR_ADJ[ISO_NUM_MAX][6] = {
 /*cnr_weight|umargin_up|umargin_dw|vmargin_up|vmargin_dw| alp_mode*/
-    {32,    256,    256,    256,    256,    2,},
-    {32,    256,    256,    256,    256,    2,},
-    {40,    256,    256,    256,    256,    2,},
-    {48,    256,    256,    256,    256,    2,},
-    {48,    256,    256,    256,    256,    2,},
-    {48,    256,    256,    256,    256,    2,},
-    {48,    256,    256,    256,    256,    2,},
-    {48,    256,    256,    256,    256,    2,},
-    {48,    256,    256,    256,    256,    2,},
-    {48,    256,    256,    256,    256,    2,},
+    {32,    32,    32,    32,    32,    0,},
+    {32,    32,    32,    32,    32,    0,},
+    {32,    32,    32,    32,    32,    0,},
+    {48,    42,    32,    42,    32,    2,},
+    {48,    42,    32,    42,    32,    2,},
+    {48,    42,    32,    42,    32,    2,},
+    {48,    42,    32,    42,    32,    2,},
+    {48,    42,    32,    42,    32,    2,},
+    {48,    42,    32,    42,    32,    2,},
+    {48,    42,    32,    42,    32,    2,},
 };
 
 //aisp_purple_ctl_t
@@ -948,16 +948,16 @@ static int32_t _CALIBRATION_PURPLE_CTL[4] = {
 //aisp_purple_adj_t
 static uint16_t _CALIBRATION_PURPLE_ADJ[ISO_NUM_MAX][7] = {
 /*purple_weight|purple_umargin_up|purple_umargin_dw|purple_vmargin_up|purple_vmargin_dw| purple_cst_thd|purple_desat_en|*/
-    {32,    840,    840,    840,    840,    40,    2,},
-    {32,    840,    840,    840,    840,    40,    2,},
-    {48,    840,    840,    840,    840,    40,    2,},
-    {64,    840,    840,    840,    840,    40,    2,},
-    {64,    840,    840,    840,    840,    40,    2,},
-    {64,    840,    840,    840,    840,    40,    2,},
-    {64,    840,    840,    840,    840,    40,    2,},
-    {64,    840,    840,    840,    840,    40,    2,},
-    {64,    840,    840,    840,    840,    40,    2,},
-    {64,    840,    840,    840,    840,    40,    2,},
+    {48,    32,    32,    32,    32,    5,    2,},
+    {48,    32,    32,    32,    32,    5,    2,},
+    {48,    32,    32,    32,    32,    5,    2,},
+    {48,    32,    32,    32,    32,    5,    2,},
+    {48,    32,    32,    32,    32,    5,    2,},
+    {48,    32,    32,    32,    32,    5,    2,},
+    {48,    32,    32,    32,    32,    5,    2,},
+    {48,    32,    32,    32,    32,    5,    2,},
+    {48,    32,    32,    32,    32,    5,    2,},
+    {48,    32,    32,    32,    32,    5,    2,},
 };
 
 //aisp_ltm_t
@@ -1009,16 +1009,16 @@ static int32_t _CALIBRATION_LTM_CONTRAST[ISO_NUM_MAX] = {
 //aisp_sharpen_ltm_t
 static int32_t _CALIBRATION_LTM_SHARP_ADJ[ISO_NUM_MAX][4] = {
 /* alpha | shrp_r_u6 | shrp_s_u8 | shrp_smth_lvlsft */
-    {32,    6,    80,      7,},
-    {24,    6,    64,      7,},
-    {18,    5,    48,      7,},
-    {12,    5,    36,      7,},
-    {10,    5,    24,      7,},
-    {10,    5,    14,      7,},
-    { 8,    5,     8,      7,},
-    { 8,    5,     8,      7,},
-    { 8,    5,     8,      7,},
-    { 8,    5,     8,      7,},
+    {20,    8,    20,      7,},
+    {20,    8,    20,      7,},
+    {18,    8,    20,      7,},
+    {12,    8,    20,      7,},
+    {12,    8,    20,      7,},
+    {10,    8,    14,      7,},
+    { 8,    8,     8,      7,},
+    { 8,    8,     8,      7,},
+    { 8,    8,     8,      7,},
+    { 8,    8,     8,      7,},
 };
 
 static uint16_t _CALIBRATION_LTM_SATUR_LUT[63] = {
@@ -1075,11 +1075,11 @@ static int32_t _CALIBRATION_DNLP_CTL[24] = {
     5,   // dnlp_cuvbld_min
     15,  // dnlp_cuvbld_max
     0,   // dnlp_clashBgn
-    60,  // dnlp_clashEnd
+    64,  // dnlp_clashEnd
     6,   // dnlp_blkext_ofst
     5,  // dnlp_whtext_ofst
     32,  // dnlp_blkext_rate
-    60,  // dnlp_whtext_rate
+    63,  // dnlp_whtext_rate
     1,   // dnlp_dbg_map
     8,  // dnlp_final_gain
     8,  // dnlp_scurv_low_th
@@ -1090,13 +1090,13 @@ static int32_t _CALIBRATION_DNLP_CTL[24] = {
     0,   // dnlp_mtdrate_adp_en
     1,   // dnlp_ble_en
     48,  // dnlp_scn_chg_th
-    60, // dnlp_mtdbld_rate
+    64, // dnlp_mtdbld_rate
     0,  //dnlp_str_fixed
     //if dnlp_by_iso_luma 0: luma_avg, so dnlp_scurv_low_th/dnlp_scurv_mid1_th/dnlp_scurv_mid2_th/dnlp_scurv_hgh1_th/dnlp_scurv_hgh2_th range is [0 - 255<<4].
     // If dnlp_by_iso_luma 1: iso, so dnlp_scurv_low_th/dnlp_scurv_mid1_th/dnlp_scurv_mid2_th/dnlp_scurv_hgh1_th/dnlp_scurv_hgh2_th range is [0 - 1024].
     // ISO100: 8; ISO200: 16; ISO400: 32; ISO800: 64; ISO1600: 128; ISO3200: 256; ISO6400: 512; ISO12800: 1024
     1,  //dnlp_by_iso_luma 1: iso 0: luma_avg
-    1,  //dnlp_scurv_gain_mode
+    0,  //dnlp_scurv_gain_mode
     0,  //dnlp_luma_dbg
 };
 
@@ -1138,23 +1138,23 @@ static int32_t _CALIBRATION_DHZ_STRENGTH[ISO_NUM_MAX] = {1024, 1024, 1024, 1024,
 //aisp_sharpen_ctl_t
 static int32_t _CALIBRATION_PEAKING_CTL[54] = {
     //pk_flt1_v1d[3]
-    120, -60, 0,
+    110, 8, -63,
     //pk_flt2_v1d[3]
-    120, -60, 0,
+    126, -63, 0,
     //pk_flt1_h1d[5]
-    120, -60, 0, 0, 0,
+    94, 18, -44, -18, -3,
     //pk_flt2_h1d[5]
-    120, -60, 0, 0, 0,
+    122, -55, -7, 2, -1,
     //pkosht_vsluma_lut[9]
-    5, 5, 5, 4, 4, 3, 2, 1, 0,
+    2, 4, 5, 5, 5, 5, 5, 4, 2,
     //pk_flt1_2d[3][4]
-    124,    70,     -29,    0,
-    70,     -37,    -16,    0,
-    -29,    -16,    -3,     0,
+    72,    13,     -9,    -2,
+    13,     -5,    -7,    0,
+    -9,    -7,    -2,     0,
     //pk_flt2_2d[3][4]
-    124,    70,     -29,    0,
-    70,     -37,    -16,    0,
-    -29,    -16,    -3,     0,
+    72,    13,     -9,    -2,
+    13,     -5,    -7,    0,
+    -9,    -7,    -2,     0,
     /*124,    -11,     -5,    0,
     -11,     -11,    -2,    0,
     -5,    -2,    0,     0,*/
@@ -1182,116 +1182,116 @@ static uint16_t _CALIBRATION_PEAKING_ADJUST[ISO_NUM_MAX][6] = {
 
 //aisp_sharpen_t->peaking_flt1_gain_adp_motion
 static uint8_t _CALIBRATION_PEAKING_FLT1_MOTION_ADP_GAIN[ISO_NUM_MAX][8] = {
-    {22, 42, 43, 43, 45, 43, 42, 42,},
-    {22, 42, 42, 43, 45, 43, 42, 42,},
-    {18, 36, 42, 43, 44, 43, 42, 42,},
-    {14, 28, 36, 42, 43, 43, 42, 42,},
-    {12, 26, 32, 38, 40, 40, 40, 40,},
-    {10, 24, 28, 32, 36, 38, 40, 40,},
-    {8, 22, 24, 28, 28, 30, 30, 32,},
-    {8, 20, 22, 24, 26, 28, 28, 30,},
-    {8, 16, 20, 22, 22, 26, 26, 26,},
+    {16, 18, 18, 20, 22, 25, 28, 30,},
+    {16, 18, 18, 20, 22, 25, 28, 30,},
+    {11, 12, 14, 16, 18, 24, 27, 27,},
+    {10, 12, 14, 16, 18, 22, 24, 24,},
+    {10, 12, 14, 16, 18, 20, 22, 22,},
+    {10, 12, 14, 16, 18, 20, 22, 22,},
+    {10, 12, 14, 16, 18, 20, 22, 22,},
+    {10, 12, 14, 16, 18, 20, 22, 22,},
+    {10, 12, 14, 16, 18, 20, 22, 22,},
     {8, 10, 10, 10, 10, 10, 10, 10,},
 };
 
 //aisp_sharpen_t->peaking_flt2_gain_adp_motion
 static uint8_t _CALIBRATION_PEAKING_FLT2_MOTION_ADP_GAIN[ISO_NUM_MAX][8] = {
-    {22, 42, 43, 43, 45, 43, 42, 42,},
-    {22, 42, 42, 43, 45, 43, 42, 42,},
-    {18, 36, 42, 43, 44, 43, 42, 42,},
-    {14, 28, 36, 42, 43, 43, 42, 42,},
-    {12, 26, 32, 38, 40, 40, 40, 40,},
-    {10, 24, 28, 32, 36, 38, 40, 40,},
-    {8, 22, 24, 28, 28, 30, 30, 32,},
-    {8, 20, 22, 24, 26, 28, 28, 30,},
-    {8, 16, 20, 22, 22, 26, 26, 26,},
+    {16, 18, 18, 20, 22, 25, 28, 30,},
+    {16, 18, 18, 20, 22, 25, 28, 30,},
+    {11, 12, 14, 16, 18, 24, 27, 27,},
+    {10, 12, 14, 16, 18, 22, 24, 24,},
+    {10, 12, 14, 16, 18, 20, 22, 22,},
+    {10, 12, 14, 16, 18, 20, 22, 22,},
+    {10, 12, 14, 16, 18, 20, 22, 22,},
+    {10, 12, 14, 16, 18, 20, 22, 22,},
+    {10, 12, 14, 16, 18, 20, 22, 22,},
     {8, 10, 10, 10, 10, 10, 10, 10,},
 };
 
 //aisp_sharpen_t->peaking_gain_adp_luma
 static uint8_t _CALIBRATION_PEAKING_GAIN_VS_LUMA_LUT[ISO_NUM_MAX][9] = {
-    {4, 5, 6, 6, 7, 7, 6, 5, 3,},
-    {4, 5, 5, 6, 7, 6, 5, 5, 3,},
-    {3, 4, 5, 5, 5, 6, 5, 5, 2,},
-    {3, 4, 4, 5, 5, 5, 6, 5, 2,},
-    {2, 3, 3, 4, 4, 4, 4, 4, 2,},
-    {2, 3, 3, 4, 4, 4, 4, 3, 2,},
-    {0, 2, 3, 4, 4, 4, 4, 3, 2,},
-    {0, 1, 2, 4, 4, 4, 4, 2, 2,},
-    {0, 1, 2, 4, 4, 4, 4, 2, 2,},
-    {0, 1, 2, 4, 4, 4, 4, 2, 2,},
+    {4, 4, 5, 7, 9, 9, 7, 5, 4,},
+    {3, 3, 4, 6, 9, 9, 7, 5, 3,},
+    {3, 3, 4, 6, 8, 8, 6, 5, 3,},
+    {2, 3, 3, 5, 8, 8, 6, 5, 3,},
+    {2, 3, 3, 4, 7, 7, 6, 4, 3,},
+    {1, 2, 2, 3, 6, 6, 5, 4, 2,},
+    {0, 1, 2, 2, 5, 5, 5, 4, 2,},
+    {0, 1, 2, 2, 3, 5, 5, 4, 2,},
+    {0, 1, 2, 2, 3, 5, 5, 4, 2,},
+    {0, 1, 2, 2, 3, 5, 5, 4, 2,},
 };
 
 //aisp_sharpen_t->peaking_gain_adp_grad1
 static uint8_t _CALIBRATION_PEAKING_CIR_FLT1_GAIN[ISO_NUM_MAX][5] = {
-    {30, 150, 64, 19, 150,},
-    {30, 150, 64, 19, 150,},
-    {30, 150, 64, 19, 150,},
-    {30, 150, 64, 19, 150,},
-    {30, 150, 64, 19, 150,},
-    {30, 150, 64, 19, 150,},
-    {30, 150, 64, 19, 150,},
-    {30, 150, 64, 19, 150,},
-    {30, 150, 64, 19, 150,},
-    {30, 150, 64, 19, 150,},
+    {15, 130, 48, 16, 100,},
+    {15, 130, 48, 16, 100,},
+    {15, 130, 48, 16, 100,},
+    {15, 130, 48, 16, 100,},
+    {15, 120, 48, 16, 100,},
+    {15, 110, 48, 16, 100,},
+    {15, 96, 48, 16, 100,},
+    {15, 96, 48, 16, 100,},
+    {15, 96, 48, 16, 100,},
+    {15, 96, 48, 16, 100,},
 };
 
 //aisp_sharpen_t->peaking_gain_adp_grad2
 static uint8_t _CALIBRATION_PEAKING_CIR_FLT2_GAIN[ISO_NUM_MAX][5] = {
-    {30, 150, 64, 19, 150,},
-    {30, 150, 64, 19, 150,},
-    {30, 150, 64, 19, 150,},
-    {30, 150, 64, 19, 150,},
-    {30, 150, 64, 19, 150,},
-    {30, 150, 64, 19, 150,},
-    {30, 150, 64, 19, 150,},
-    {30, 150, 64, 19, 150,},
-    {30, 150, 64, 19, 150,},
-    {30, 150, 64, 19, 150,},
+    {15, 130, 48, 16, 100,},
+    {15, 130, 48, 16, 100,},
+    {15, 130, 48, 16, 100,},
+    {15, 130, 48, 16, 100,},
+    {15, 120, 48, 16, 100,},
+    {15, 110, 48, 16, 100,},
+    {15, 96, 48, 16, 100,},
+    {15, 96, 48, 16, 100,},
+    {15, 96, 48, 16, 100,},
+    {15, 96, 48, 16, 100,},
 };
 
 //aisp_sharpen_t->peaking_gain_adp_grad3
 static uint8_t _CALIBRATION_PEAKING_DRT_FLT1_GAIN[ISO_NUM_MAX][5] = {
-    {20, 150, 40, 20, 140,},
-    {20, 150, 40, 20, 140,},
-    {20, 150, 40, 20, 140,},
-    {20, 150, 40, 20, 140,},
-    {20, 150, 40, 20, 140,},
-    {20, 150, 40, 20, 140,},
-    {20, 150, 40, 20, 140,},
-    {20, 150, 40, 20, 140,},
-    {20, 150, 40, 20, 140,},
-    {20, 150, 40, 20, 140,},
+    {15, 110, 32, 16, 100,},
+    {15, 110, 32, 16, 100,},
+    {15, 110, 32, 16, 100,},
+    {15, 110, 32, 16, 100,},
+    {15, 100, 32, 16, 100,},
+    {15, 100, 32, 16, 100,},
+    {15, 96, 32, 16, 100,},
+    {15, 96, 32, 16, 100,},
+    {15, 84, 32, 16, 100,},
+    {15, 84, 32, 16, 100,},
 };
 
 //aisp_sharpen_t->peaking_gain_adp_grad4
 static uint8_t _CALIBRATION_PEAKING_DRT_FLT2_GAIN[ISO_NUM_MAX][5] = {
-    {20, 150, 40, 20, 140,},
-    {20, 150, 40, 20, 140,},
-    {20, 150, 40, 20, 140,},
-    {20, 150, 40, 20, 140,},
-    {20, 150, 40, 20, 140,},
-    {20, 150, 40, 20, 140,},
-    {20, 150, 40, 20, 140,},
-    {20, 150, 40, 20, 140,},
-    {20, 150, 40, 20, 140,},
-    {20, 150, 40, 20, 140,},
+    {15, 110, 32, 16, 100,},
+    {15, 110, 32, 16, 100,},
+    {15, 110, 32, 16, 100,},
+    {15, 110, 32, 16, 100,},
+    {15, 100, 32, 16, 100,},
+    {15, 100, 32, 16, 100,},
+    {15, 96, 32, 16, 100,},
+    {15, 96, 32, 16, 100,},
+    {15, 84, 32, 16, 100,},
+    {15, 84, 32, 16, 100,},
 };
 
 //aisp_cm_ctl_t
 static int32_t _CALIBRATION_CM_CTL[ISO_NUM_MAX][4] =
 {
 /* cm_sat | cm_hue | cm_contrast | cm_brightness */
-    {512,    0,    1024,    0},
-    {512,    0,    1024,    0},
-    {512,    0,    1024,    0},
-    {512,    0,    1024,    0},
-    {512,    0,    1024,    0},
-    {512,    0,    1024,    0},
-    {512,    0,    1024,    0},
-    {512,    0,    1024,    0},
-    {512,    0,    1024,    0},
-    {512,    0,    1024,    0},
+    {560,    0,    1024,    0},
+    {560,    0,    1024,    0},
+    {560,    0,    1024,    0},
+    {560,    0,    1024,    0},
+    {550,    0,    1024,    0},
+    {540,    0,    1024,    0},
+    {540,    0,    1024,    0},
+    {540,    0,    1024,    0},
+    {540,    0,    1024,    0},
+    {540,    0,    1024,    0},
 };
 
 //aisp_cm_t->cm_y_via_hue

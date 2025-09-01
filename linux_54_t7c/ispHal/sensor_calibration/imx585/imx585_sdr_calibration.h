@@ -11,7 +11,7 @@
 
 namespace Imx585SdrCalibration {
 //calibration_version
-static int32_t _CALIBRATION_VERSION[1] = {20230815};
+static int32_t _CALIBRATION_VERSION[1] = {20250822};
 
 //aisp_top_ctl_t
 static int32_t _CALIBRATION_TOP_CTL[50] = {
@@ -143,7 +143,7 @@ static int32_t _CALIBRATION_AE_CTL[32] = {
     3,  //ae route deflicker mode, 0: none, 1: anti-50hz, 2: anti-60hz, 3: auto detected
     64,   //exposure convergence speed [0, 128]
     128,  //ae global luma target compensation
-    170,//150,//170,  //ae luma target srgb curve
+    170,  //ae luma target srgb curve
     60,   //ae luma wdr target
     0,    //low light enhancement mode, 0: adjust exposure 1: adjust curve
     256,  //[0,256] low light enhancement strength
@@ -154,17 +154,17 @@ static int32_t _CALIBRATION_AE_CTL[32] = {
     1, //ae delay adjust enable
     10, //ae delay frame count
     100, //ae delay adjust tolerance
-    (4<<12), //WDR mode only: ae WDR mode low light threshold by log2 value of gain
+    400, //WDR mode only: ae WDR mode low light threshold, use ISO representation, ISO = times * 100
     77,   //WDR mode only: Max percentage of clipped pixels for long exposure: WDR mode only: 256 = 100% clipped pixels
     15,   //WDR mode only: Time filter for exposure ratio
     0,   //reduce fps feature enable.
-    15*256,        //target fps of reduce frame rates.
-    (4<<12),   //trigger threshold of the reduce fps, write gain log2 value.
-    (1<<10),   //lag threshold of the reduce fps, write gain log2 value.
-    (1<<12),        // max isp gain limit, exp: x4 = log2(4)<<12 = 2<<12
-    (1000<<12),     // max shutter time limit, exp:  1000ms = 1000<<12
-    (20480),       // max total gain limit, exp:x1024 = log2(1024)<<12 = 10<<12, 54db = (54/6)<<12 = 9<<12  28672=128x
-    (16<<6),       // max exposure ratio limit, exp: x128 = 128<<6
+    15,        //target fps of reduce frame rates.
+    1600,   //trigger threshold of the reduce fps, use ISO representation, ISO = times * 100.
+    50,   //lag threshold of the reduce fps, use ISO representation, (trigger threshold + lag threshold) or (trigger threshold - lag threshold).
+    200,        // max isp gain limit, use ISO representation, ISO = times * 100
+    1000000,     // max shutter time limit, this is absolute time, unit is us
+    3200,       // max total gain limit, use ISO representation, ISO = times * 100
+    16,       // max exposure ratio limit, this is times.
     (200*(1<<10)),  //  Light intensity at full exposure and zero gain , exp: 128lux = 128*(1<<10)
     2,       //feedback delay frame numbers of stats info in current system
     0,       //ae debug:bit[0] target, [1] ratio, [2] exposure calculate
@@ -836,7 +836,7 @@ static uint16_t _CALIBRATION_LENS_SHADING_ADJ[ISO_NUM_MAX][2] = {
     {256, 256,}, //x8 gain
     {256, 256,}, //x16 gain
     {128,  128,}, //x32 gain
-    {128,  128,}, //x64 gain
+    {64,  64,}, //x64 gain
     {64,   64,}, //x128 gain
     {64,   64,}, //x256 gain
     {64,   64,}, //x512 gain
@@ -919,22 +919,22 @@ static int32_t _CALIBRATION_CNR_CTL[6] = {
     15, //cnr_map_ythd0
     15, //cnr_map_ythd1
     12, //cnr_map_norm
-    16, //cnr_map_str
+    10, //cnr_map_str
 };
 
 //aisp_cnr_adj_t
 static uint16_t _CALIBRATION_CNR_ADJ[ISO_NUM_MAX][6] = {
 /*cnr_weight|umargin_up|umargin_dw|vmargin_up|vmargin_dw| alp_mode*/
-    {32,    256,    256,    256,    256,    2,},
-    {32,    256,    256,    256,    256,    2,},
-    {40,    256,    256,    256,    256,    2,},
-    {48,    256,    256,    256,    256,    2,},
-    {48,    256,    256,    256,    256,    2,},
-    {48,    256,    256,    256,    256,    2,},
-    {48,    256,    256,    256,    256,    2,},
-    {48,    256,    256,    256,    256,    2,},
-    {48,    256,    256,    256,    256,    2,},
-    {48,    256,    256,    256,    256,    2,},
+    {32,    32,    32,    32,    32,    0,},
+    {32,    32,    32,    32,    32,    0,},
+    {32,    32,    32,    32,    32,    0,},
+    {48,    42,    32,    42,    32,    2,},
+    {48,    42,    32,    42,    32,    2,},
+    {48,    42,    32,    42,    32,    2,},
+    {48,    42,    32,    42,    32,    2,},
+    {48,    42,    32,    42,    32,    2,},
+    {48,    42,    32,    42,    32,    2,},
+    {48,    42,    32,    42,    32,    2,},
 };
 
 //aisp_purple_ctl_t
@@ -948,16 +948,16 @@ static int32_t _CALIBRATION_PURPLE_CTL[4] = {
 //aisp_purple_adj_t
 static uint16_t _CALIBRATION_PURPLE_ADJ[ISO_NUM_MAX][7] = {
 /*purple_weight|purple_umargin_up|purple_umargin_dw|purple_vmargin_up|purple_vmargin_dw| purple_cst_thd|purple_desat_en|*/
-    {64,    64,    64,    64,    64,    5,    2,},
-    {64,    64,    64,    64,    64,    5,    2,},
-    {64,    64,    64,    64,    64,    5,    2,},
-    {64,    64,    64,    64,    64,    5,    2,},
-    {64,    64,    64,    64,    64,    5,    2,},
-    {64,    64,    64,    64,    64,    5,    2,},
-    {64,    64,    64,    64,    64,    5,    2,},
-    {64,    64,    64,    64,    64,    5,    2,},
-    {64,    64,    64,    64,    64,    5,    2,},
-    {64,    64,    64,    64,    64,    5,    2,},
+    {48,    48,    32,    48,    32,    5,    2,},
+    {48,    48,    32,    48,    32,    5,    2,},
+    {48,    48,    32,    48,    32,    5,    2,},
+    {48,    48,    32,    48,    32,    5,    2,},
+    {48,    48,    32,    48,    32,    5,    2,},
+    {48,    48,    32,    48,    32,    5,    2,},
+    {48,    48,    32,    48,    32,    5,    2,},
+    {48,    48,    32,    48,    32,    5,    2,},
+    {48,    48,    32,    48,    32,    5,    2,},
+    {48,    48,    32,    48,    32,    5,    2,},
 };
 
 //aisp_ltm_t
@@ -1050,16 +1050,16 @@ static int32_t _CALIBRATION_LC_CTL[16] = {
 
 static int32_t _CALIBRATION_LC_STRENGTH[ISO_NUM_MAX][2] = {
 /* lc_ypkbv_slope_lmt_0, lc_ypkbv_slope_lmt_1 */
-    {48, 38,},
-    {48, 38,},
-    {48, 38,},
-    {48, 38,},
-    {48, 38,},
-    {48, 38,},
-    {48, 38,},
-    {48, 38,},
-    {48, 38,},
-    {48, 38,},
+    {48, 56,},
+    {48, 56,},
+    {48, 56,},
+    {48, 52,},
+    {48, 48,},
+    {48, 48,},
+    {48, 48,},
+    {48, 48,},
+    {48, 48,},
+    {48, 48,},
 };
 
 static uint16_t _CALIBRATION_LC_SATUR_LUT[63] = {
@@ -1105,15 +1105,12 @@ static int32_t _CALIBRATION_DNLP_STRENGTH[ISO_NUM_MAX] = {8, 8, 8, 8, 8, 8, 8, 8
 
 static uint16_t _CALIBRATION_DNLP_SCURV_LOW[65] =
 {0,10,22,33,46,59,73,86,100,114,129,143,159,175,191,207,224,242,261,281,301,322,342,361,380,398,415,433,450,468,485,503,520,537,555,572,589,606,623,640,657,673,690,706,722,738,754,769,785,800,815,831,846,861,876,891,905,920,935,950,964,979,993,1008,1023};
-    //{0,3,7,11,17,23,30,39,50,63,77,94,112,131,150,170,191,213,235,257,280,303,327,350,374,398,421,444,466,487,508,527,546,565,583,600,617,634,650,666,682,697,712,727,742,756,771,785,799,813,827,841,855,869,883,897,911,925,939,953,967,981,995,1009,1023};
 
 static uint16_t _CALIBRATION_DNLP_SCURV_MID1[65] =
 {0,10,22,33,46,59,73,86,100,114,129,143,159,175,191,207,224,242,261,281,301,322,342,361,380,398,415,433,450,468,485,503,520,537,555,572,589,606,623,640,657,673,690,706,722,738,754,769,785,800,815,831,846,861,876,891,905,920,935,950,964,979,993,1008,1023};
-    //{0,3,7,11,17,23,30,39,50,63,77,94,112,131,150,170,191,213,235,257,280,303,327,350,374,398,421,444,466,487,508,527,546,565,583,600,617,634,650,666,682,697,712,727,742,756,771,785,799,813,827,841,855,869,883,897,911,925,939,953,967,981,995,1009,1023};
 
 static uint16_t _CALIBRATION_DNLP_SCURV_MID2[65] =
 {0,10,22,33,46,59,73,86,100,114,129,143,159,175,191,207,224,242,261,281,301,322,342,361,380,398,415,433,450,468,485,503,520,537,555,572,589,606,623,640,657,673,690,706,722,738,754,769,785,800,815,831,846,861,876,891,905,920,935,950,964,979,993,1008,1023};
-    //{0,3,7,11,17,23,30,39,50,63,77,94,112,131,150,170,191,213,235,257,280,303,327,350,374,398,421,444,466,487,508,527,546,565,583,600,617,634,650,666,682,697,712,727,742,756,771,785,799,813,827,841,855,869,883,897,911,925,939,953,967,981,995,1009,1023};
 
 static uint16_t _CALIBRATION_DNLP_SCURV_HGH1[65] =
     {0,10,22,33,46,59,73,86,100,114,129,143,159,175,191,207,224,242,261,281,301,322,342,361,380,398,415,433,450,468,485,503,520,537,555,572,589,606,623,640,657,673,690,706,722,738,754,769,785,800,815,831,846,861,876,891,905,920,935,950,964,979,993,1008,1023};
@@ -1376,16 +1373,8 @@ static int32_t _CALIBRATION_BLACK_LEVEL[9][5] =
 {46848,46848,46928,46928,46848,},
 {43648,43664,43648,43648,43648,},
 {43648,43664,43648,43648,43648,},
-{34624,34656,35008,34960,34624,},
-//{51200,51200,51200,51184,51200,},
-//{51184,51200,51184,51168,51184,},
-//{51216,51216,51216,51216,51216,},
-//{51200,51200,51200,51200,51200,},
-//{51248,51344,51184,51168,51248,},
-//{51200,51200,51200,51200,51200,},
-//{51824,51968,51440,51456,51824,},
-//{51840,52176,51056,51184,51840,},
-//{54224,54976,52624,53120,54224,},
+{43648,43664,43648,43648,43648,},
+{43648,43664,43648,43648,43648,},
 };
 
 static uint16_t _CALIBRATION_SHADING_RADIAL_R[129]=
