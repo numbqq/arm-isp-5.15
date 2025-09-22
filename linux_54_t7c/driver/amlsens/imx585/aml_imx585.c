@@ -678,7 +678,7 @@ static int imx585_ctrls_init(struct imx585 *imx585)
 	v4l2_ctrl_handler_init(&imx585->ctrls, 7);
 
 	v4l2_ctrl_new_std(&imx585->ctrls, &imx585_ctrl_ops,
-				V4L2_CID_GAIN, 0, 0xF0, 1, 0);
+				V4L2_CID_GAIN, 0, 0xffff, 1, 0);
 
 	v4l2_ctrl_new_std(&imx585->ctrls, &imx585_ctrl_ops,
 				V4L2_CID_EXPOSURE, 0, 0xffff, 1, 0);

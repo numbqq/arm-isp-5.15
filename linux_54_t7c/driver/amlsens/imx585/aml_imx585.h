@@ -23,6 +23,8 @@
 #define IMX585_STANDBY    0x3000
 #define IMX585_REGHOLD    0x3001
 #define IMX585_EXPOSURE   0x3050
+#define IMX585_EXPOSURE_SHR0  IMX585_EXPOSURE
+#define IMX585_EXPOSURE_SHR1  0x3054
 #define IMX585_GAIN       0x306C
 #define IMX585_GAIN_SEL   0x3030 //default 0h LCG mode, 1h HCG mode
 #define IMX585_SLAVE_ID   0x001A
@@ -91,6 +93,17 @@ static const struct regmap_config imx585_regmap_config = {
 	.cache_type = REGCACHE_RBTREE,
 };
 
+static const struct imx585_regval clear_hdr_4k_30fps_1782Mbps_4lane_12bits[] = {
+	{0x3000, 0x01}, //stand by
+	{0x3001, 0x00},
+	{0x3002, 0x01}, //master mode operation start/stop, after cancel stand by set the register 0
+	{0x3014, 0x04}, //INCK setting 24M
+	{0x3015, 0x02}, //data rate setting 1782M
+	{0x3018, 0x10},
+	{0x3019, 0x00},
+	{0x301A, 0x10}, //hdr mode clear
+
+};
 static const struct imx585_regval imx585_4lane_3840_2160_1440m_60fps[] = {
 	{0x3000, 0x01}, //stand by
 	{0x3001, 0x00},

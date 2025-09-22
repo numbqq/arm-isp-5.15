@@ -225,7 +225,7 @@ void save_img(const char* prefix, void *buff, unsigned int size, int flag, int n
 
     // if (num % 10 != 0)
     //     return;
-
+    INFO("num=%d", num);
     #ifdef ANDROID
     sprintf(name, "/sdcard/DCIM/ca_%s-%d_dump-%d-%dx%d.yuv", prefix, flag, num, width, height);
     #else
@@ -390,7 +390,8 @@ void isp_param_init(struct media_stream v4l2_media_stream, struct thread_param *
 #endif
     cmos_sensor_control_cb(tparm->sensorCfg, &tparm->info.pstAlgCtx.stSnsExp);
     cmos_get_sensor_calibration(tparm->sensorCfg, v4l2_media_stream.sensor_ent, &tparm->info.calib);
-
+	INFO("get ae defaut");
+    tparm->sensorCfg->expFunc.pfn_cmos_get_alg_default(0, &tparm->info.pstAlgCtx.stSnsDft);
     (ispIf.algEnable)(0, &tparm->info.pstAlgCtx, &tparm->info.calib);
     memset(alg_init, 0, sizeof(alg_init));
 
@@ -663,6 +664,7 @@ void * video_thread(void *arg)
         idx = v4l2_buf.index;
         //INFO("[T#%d] dq buf ok, idx %d, mem 0x%p \n",stream_type, idx, v4l2_mem[idx]);
         //save_img("mif",v4l2_mem[idx], tparm->width * tparm->height *2, stream_type, display_count);
+        INFO("display_count %lld", display_count);
         if (strstr(tparm->mediadevname, "/dev/media0")) {
             save_img("mif_0",v4l2_mem[idx], v4l2_buf.length, stream_type, display_count, tparm->width, tparm->height);
         }
@@ -693,7 +695,7 @@ void * video_thread(void *arg)
             #endif
             start = GetTimeMsec();
         }
-
+        INFO("capture_count %lld", tparm->capture_count);
         if (tparm->capture_count > 0)
             tparm->capture_count--;
 
@@ -774,6 +776,7 @@ void * stats_thread(void *arg)
         if (manual_sensor_analog_gain > 0) {
             attr->stManual.enAGainOpType  = OP_TYPE_MANUAL;
             attr->stManual.u32AGain = manual_sensor_analog_gain;
+            attr->stAuto.s32SysMaxTotalGain = manual_sensor_analog_gain * 16;
         } else {
             attr->stManual.enAGainOpType = OP_TYPE_AUTO;
         }
@@ -1118,7 +1121,7 @@ int main(int argc, char *argv[])
 
         .width      = 3840,
         .height     = 2160,
-        .pixformat  = V4L2_PIX_FMT_SRGGB10,//V4L2_PIX_FMT_SBGGR10, //V4L2_PIX_FMT_Y12,//V4L2_PIX_FMT_NV12,//V4L2_PIX_FMT_SRGGB12,//
+        .pixformat  = V4L2_PIX_FMT_SRGGB12,//V4L2_PIX_FMT_SBGGR10, //V4L2_PIX_FMT_Y12,//V4L2_PIX_FMT_NV12,//V4L2_PIX_FMT_SRGGB12,//
 
 #if defined (DUAL_CAMERA)
         .fmt_code   = MEDIA_BUS_FMT_SRGGB12_1X12,
