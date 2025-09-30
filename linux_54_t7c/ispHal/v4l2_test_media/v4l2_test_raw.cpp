@@ -39,7 +39,7 @@
 #include "lens_config.h"
 
 //#define WDR_ENABLE
-#define DUAL_CAMERA
+//#define DUAL_CAMERA
 
 #define NB_BUFFER                4
 #define NB_BUFFER_PARAM          1
@@ -223,13 +223,13 @@ void save_img(const char* prefix, void *buff, unsigned int size, int flag, int n
     if (num > 1000)
         return;
 
-    if (num % 10 != 0)
-        return;
+    // if (num % 10 != 0)
+    //     return;
 
     #ifdef ANDROID
     sprintf(name, "/sdcard/DCIM/ca_%s-%d_dump-%d-%dx%d.yuv", prefix, flag, num, width, height);
     #else
-    sprintf(name, "/tmp/ca_%s-%d_dump-%d-%dx%d.yuv", prefix, flag, num, width, height);
+    sprintf(name, "/tmp/ca_%s-%d_dump-%d-%dx%d.raw", prefix, flag, num, width, height);
     #endif
 
     fd = open(name, O_RDWR | O_CREAT, 0666);
@@ -664,7 +664,7 @@ void * video_thread(void *arg)
         //INFO("[T#%d] dq buf ok, idx %d, mem 0x%p \n",stream_type, idx, v4l2_mem[idx]);
         //save_img("mif",v4l2_mem[idx], tparm->width * tparm->height *2, stream_type, display_count);
         if (strstr(tparm->mediadevname, "/dev/media0")) {
-            save_img("mif_0",v4l2_mem[idx], tparm->width * tparm->height*3/2, stream_type, display_count, tparm->width, tparm->height);
+            save_img("mif_0",v4l2_mem[idx], v4l2_buf.length, stream_type, display_count, tparm->width, tparm->height);
         }
         if (strstr(tparm->mediadevname, "/dev/media1")) {
             save_img("mif_1",v4l2_mem[idx], tparm->width * tparm->height*3/2, stream_type, display_count, tparm->width, tparm->height);
@@ -1116,9 +1116,9 @@ int main(int argc, char *argv[])
         .devname    = v4ldevname,
         .fbp        = 0,
 
-        .width      = 1920,
-        .height     = 1080,
-        .pixformat  = V4L2_PIX_FMT_NV12,//V4L2_PIX_FMT_SBGGR10, //V4L2_PIX_FMT_Y12,//V4L2_PIX_FMT_NV12,//V4L2_PIX_FMT_SRGGB12,//
+        .width      = 3840,
+        .height     = 2160,
+        .pixformat  = V4L2_PIX_FMT_SRGGB10,//V4L2_PIX_FMT_SBGGR10, //V4L2_PIX_FMT_Y12,//V4L2_PIX_FMT_NV12,//V4L2_PIX_FMT_SRGGB12,//
 
 #if defined (DUAL_CAMERA)
         .fmt_code   = MEDIA_BUS_FMT_SRGGB12_1X12,

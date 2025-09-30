@@ -151,7 +151,7 @@ static int32_t _CALIBRATION_AE_CTL[32] = {
     16,    // [0,1024] high light reduce trigger threshold
     128,    // [0,1024] high light reduce strength
     10,   //ae tolerance
-    1, //ae delay adjust enable
+    0, //ae delay adjust enable
     10, //ae delay frame count
     100, //ae delay adjust tolerance
     400, //WDR mode only: ae WDR mode low light threshold, use ISO representation, ISO = times * 100
