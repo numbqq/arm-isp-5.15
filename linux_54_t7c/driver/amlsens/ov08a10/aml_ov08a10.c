@@ -594,16 +594,23 @@ int ov08a10_power_on(struct device *dev, struct sensor_gpio *gpio)
 {
 	int ret;
 
-	gpiod_set_value_cansleep(gpio->rst_gpio, 1);
-	if (!IS_ERR_OR_NULL(gpio->pwdn_gpio)) {
-		gpiod_set_value_cansleep(gpio->pwdn_gpio, 1);
-	}
-	ret = mclk_enable(dev,24000000);
-	if (ret < 0 )
-		dev_err(dev, "set mclk fail\n");
+	 gpiod_set_value_cansleep(gpio->rst_gpio, 1);
+	 usleep_range(30000, 31000);
 
-	// 30ms
-	usleep_range(30000, 31000);
+	 gpiod_set_value_cansleep(gpio->rst_gpio, 0);
+	 usleep_range(100000, 110000);
+
+	 gpiod_set_value_cansleep(gpio->rst_gpio, 1);
+	 usleep_range(30000, 31000);
+
+	 ret = mclk_enable(dev,24000000);
+	 if (ret < 0 )
+	 dev_err(dev, "set mclk fail\n");
+
+	 udelay(30);
+
+	 // 30ms
+	 usleep_range(30000, 31000);
 
 	return 0;
 }
@@ -654,14 +661,18 @@ static int ov08a10_log_status(struct v4l2_subdev *sd)
 
 int ov08a10_sbdev_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh) {
 	struct ov08a10 *ov08a10 = to_ov08a10(sd);
-	ov08a10_power_on(ov08a10->dev, ov08a10->gpio);
+
+	if (atomic_inc_return(&ov08a10->open_count) == 1)
+		ov08a10_power_on(ov08a10->dev, ov08a10->gpio);
 	return 0;
 }
 
 int ov08a10_sbdev_close(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh) {
 	struct ov08a10 *ov08a10 = to_ov08a10(sd);
 	ov08a10_set_stream(sd, 0);
-	ov08a10_power_off(ov08a10->dev, ov08a10->gpio);
+
+	if (atomic_dec_and_test(&ov08a10->open_count))
+		ov08a10_power_off(ov08a10->dev, ov08a10->gpio);
 	return 0;
 }
 
@@ -913,7 +924,7 @@ int ov08a10_sensor_id(struct i2c_client *client)
 	id |= val;
 
 	if (id != OV08A10_ID) {
-		dev_info(&client->dev, "Failed to get ov08a10 id: 0x%x\n", id);
+		dev_err(&client->dev, "Failed to get ov08a10 id: 0x%x\n", id);
 		return rtn;
 	} else {
 		dev_err(&client->dev, "success get ov08a10 id 0x%x", id);
