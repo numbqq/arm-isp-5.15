@@ -215,7 +215,6 @@ static int imx415_set_exposure(struct imx415 *imx415, u32 value)
 
 static int imx415_set_vts(struct imx415 *imx415, u32 value)
 {
-#if 0
 	u32 vts = 0;
 	u8 vts_h, vts_l;
 	int ret = 0;
@@ -239,8 +238,6 @@ static int imx415_set_vts(struct imx415 *imx415, u32 value)
 
 ERR:
 	return ret;
-#endif
-	return 0;
 }
 
 static int imx415_set_fps(struct imx415 *imx415, u32 value)
