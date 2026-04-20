@@ -30,6 +30,7 @@
 #define USER_SET_BRIGHTNESS         "camera.brightness"
 #define USER_SET_CONTRAST         "camera.contrast"
 #define USER_SET_SATURATION "camera.saturation"
+#define USER_SET_AE_ROI         "camera.ae.roi"
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -39,6 +40,7 @@ int system_property_get(const char* name, char* value);
 int property_get(const char *key, char *value, const char *default_value);
 int property_set(const char *key, const char *value);
 int property_get_str(const char *key, char *value, const char *default_value);
+int hex_to_uint64(const char* hex_str, uint64_t* value);
 
 #ifdef __cplusplus
 }
