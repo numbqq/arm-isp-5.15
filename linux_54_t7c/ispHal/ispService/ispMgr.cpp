@@ -160,6 +160,16 @@ int IspMgr::configure(struct media_stream *stream, int wdr, aisp_calib_info_t *o
     return rc;
 }
 
+int IspMgr::set_ae_roi(uint64_t ae_roi) {
+    std::unique_lock<std::mutex> lk(mLock);
+    if (!mStart) {
+        ERR("ISP not started, cannot set AE ROI");
+        return -1;
+    }
+    cmos_set_sensor_ae_roi(0, mSensorConfig, ae_roi);
+    return 0;
+}
+
 int IspMgr::start() {
     ERR("start +");
     int rc;
@@ -647,20 +657,29 @@ bool IspMgr::threadLoop(void * _ispmgr) {
             ERR ("[params] error: queue buffer");
             break;
         }
-        
         char value[1024*3];
         int br, constrast,saturation;
         int user_set_value;
+		uint64_t ae_roi;
 
+        memset(value, 0 ,sizeof(value));
+        property_get_str(USER_SET_AE_ROI, value, "0");
+        hex_to_uint64(value, &ae_roi);
+        int ret = ispmgr->set_ae_roi(ae_roi);
+        if (ret < 0) {
+            ERR("Failed to set AE ROI");
+        }
         if (!(ispmgr->mWdrEnable)) {
             memset(value, 0 ,sizeof(value));
-            property_get_str(USER_SET_EXP_TIME, value, "999999999");
+            property_get_str(USER_SET_EXP_TIME, value, "-1");
             user_set_value = atoi(value);
-            if (user_set_value <= 0 || user_set_value >= 999999999) {
-                ispmgr->set_exposure_time(33000);
-            } else {
-                ispmgr->set_exposure_time(user_set_value);
-            }
+			if (user_set_value != -1) {
+	            if (user_set_value <= 0 || user_set_value >= 999999999) {
+	                ispmgr->set_exposure_time(33000);
+	            } else {
+	                ispmgr->set_exposure_time(user_set_value);
+	            }
+			}
         }
         memset(value, 0 ,sizeof(value));
         property_get_str(USER_SET_AWB, value, "999999999");

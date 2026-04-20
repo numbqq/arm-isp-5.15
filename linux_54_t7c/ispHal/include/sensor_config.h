@@ -48,6 +48,7 @@ struct sensorConfig {
     ALG_SENSOR_EXP_FUNC_S expFunc;
     void (*cmos_set_sensor_entity)(struct media_entity * sensor_ent, int wdr);
     void (*cmos_get_sensor_calibration)(struct media_entity *sensor_ent, aisp_calib_info_t *calib);
+    void (*cmos_set_sensor_ae_roi)(int ViPipe, struct sensorConfig *cfg, uint64_t ae_roi);
     int sensorWidth;// max width
     int sensorHeight;// max height
     const char* sensorName;
@@ -55,10 +56,12 @@ struct sensorConfig {
     uint32_t sdrFormat;
     enum sensorType type;
 };
+
 struct sensorConfig *matchSensorConfigByStream(media_stream_t *stream);
 struct sensorConfig *matchSensorConfigByName(const char* sensorEntityName);
 void cmos_sensor_control_cb(struct sensorConfig *cfg, ALG_SENSOR_EXP_FUNC_S *stSnsExp);
 void cmos_set_sensor_entity(struct sensorConfig *cfg, struct media_entity * sensor_ent, int wdr);
+void cmos_set_sensor_ae_roi(int cam_id, struct sensorConfig *cfg, uint64_t ae_roi);
 void cmos_get_sensor_calibration(struct sensorConfig *cfg, struct media_entity *sensor_ent, aisp_calib_info_t *calib);
 
 #ifdef __cplusplus

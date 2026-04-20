@@ -116,6 +116,40 @@ int system_property_get(const char* name, char* value) {
 }
 
 
+int hex_to_uint64(const char *hex_str, uint64_t *out_val) {
+    if (hex_str == NULL || out_val == NULL) {
+        return -1;
+    }
+
+    const char *start = hex_str;
+    if (strncmp(hex_str, "0x", 2) == 0 || strncmp(hex_str, "0X", 2) == 0) {
+        start += 2;
+    }
+
+    if (strlen(start) > 16) {
+        fprintf(stderr, "Error: Hex string too long (exceeds 64 bits)\n");
+        return -1;
+    }
+
+    char *endptr;
+    errno = 0;
+
+    unsigned long long result = strtoull(hex_str, &endptr, 16);
+
+    if (errno == ERANGE) {
+        fprintf(stderr, "Error: Value out of range (ERANGE)\n");
+        return -1;
+    }
+
+    if (endptr == hex_str || *endptr != '\0') {
+        fprintf(stderr, "Error: Invalid hex character found at '%s'\n", endptr);
+        return -1;
+    }
+
+    *out_val = (uint64_t)result;
+    return 0;
+}
+
 int _property_get(const char *key, char *value, const char *default_value)
 {
     int len = system_property_get(key, value);

@@ -23,7 +23,7 @@ CFLAGS += -I $(INC_DIR) \
   -I $(SRC_DIR)/imx585 \
   -I $(SRC_DIR)/imx678
 
-LDFLAGS += -lm -shared
+LDFLAGS += -lm -shared -lpthread
 
 .PHONY: all clean
 

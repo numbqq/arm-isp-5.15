@@ -83,6 +83,7 @@ class IspMgr {
     int setMaxfps(int fps);
     int set_awb(int awb);
     int set_csc(int brightness, int contrast, int saturation);
+    int set_ae_roi(uint64_t ae_roi);
   public:
     static struct ispIF  mIspIF;
   protected:

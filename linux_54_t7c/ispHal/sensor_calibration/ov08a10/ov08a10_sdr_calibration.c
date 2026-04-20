@@ -167,6 +167,25 @@ static int32_t _CALIBRATION_AE_CTL[32] = {
     0,       //ae debug:bit[0] target, [1] ratio, [2] exposure calculate
 };
 
+static uint32_t _CALIBRATION_AE_ROI[16][7] = {
+    {0, 0, 1920, 1080, 0, 0, 0},
+    {0, 0, 1920, 1080, 0, 0, 0},
+    {0, 0, 1920, 1080, 0, 0, 0},
+    {0, 0, 1920, 1080, 0, 0, 0},
+    {0, 0, 1920, 1080, 0, 0, 0},
+    {0, 0, 1920, 1080, 0, 0, 0},
+    {0, 32, 0, 0, 320, 320, 300},
+    {0, 0, 1920, 1080, 0, 0, 0},
+    {0, 0, 1920, 1080, 0, 0, 0},
+    {0, 0, 1920, 1080, 0, 0, 0},
+    {0, 0, 1920, 1080, 0, 0, 0},
+    {0, 0, 1920, 1080, 0, 0, 0},
+    {0, 0, 1920, 1080, 0, 0, 0},
+    {0, 0, 1920, 1080, 0, 0, 0},
+    {0, 0, 1920, 1080, 0, 0, 0},
+    {0, 0, 1920, 1080, 0, 0, 0},
+};
+
 //aisp_highlight_det_t
 static int32_t _CALIBRATION_HIGHLIGHT_DETECT[27] = {
     //highlight all
@@ -1642,6 +1661,7 @@ static LookupTable calibration_awb_weight_h = { .ptr = _CALIBRATION_AWB_WEIGHT_H
 static LookupTable calibration_awb_weight_v = { .ptr = _CALIBRATION_AWB_WEIGHT_V, .rows = 1, .cols = sizeof( _CALIBRATION_AWB_WEIGHT_V ) / sizeof( _CALIBRATION_AWB_WEIGHT_V[0] ), .width = sizeof( _CALIBRATION_AWB_WEIGHT_V[0] )};
 static LookupTable calibration_awb_ref_remove_lut = { .ptr = _CALIBRATION_AWB_REF_REMOVE_LUT, .rows = sizeof( _CALIBRATION_AWB_REF_REMOVE_LUT ) / sizeof( _CALIBRATION_AWB_REF_REMOVE_LUT[0] ), .cols = sizeof( _CALIBRATION_AWB_REF_REMOVE_LUT[0] ) / sizeof( _CALIBRATION_AWB_REF_REMOVE_LUT[0][0] ), .width = sizeof( _CALIBRATION_AWB_REF_REMOVE_LUT[0][0] )};
 static LookupTable calibration_ae_ctl = {.ptr = _CALIBRATION_AE_CTL, .rows = 1, .cols = sizeof( _CALIBRATION_AE_CTL ) / sizeof( _CALIBRATION_AE_CTL[0] ), .width = sizeof( _CALIBRATION_AE_CTL[0] )};
+static LookupTable calibration_ae_roi = {.ptr = _CALIBRATION_AE_ROI, .rows = sizeof( _CALIBRATION_AE_ROI ) / sizeof( _CALIBRATION_AE_ROI[0] ), .cols = sizeof( _CALIBRATION_AE_ROI[0] ) / sizeof( _CALIBRATION_AE_ROI[0][0] ), .width = sizeof( _CALIBRATION_AE_ROI[0][0])};
 static LookupTable calibration_highlight_detect = {.ptr = _CALIBRATION_HIGHLIGHT_DETECT, .rows = 1, .cols = sizeof( _CALIBRATION_HIGHLIGHT_DETECT ) / sizeof( _CALIBRATION_HIGHLIGHT_DETECT[0] ), .width = sizeof( _CALIBRATION_HIGHLIGHT_DETECT[0] )};
 static LookupTable calibration_ae_corr_lut = {.ptr = _CALIBRATION_AE_CORR_LUT, .rows = 1, .cols = sizeof( _CALIBRATION_AE_CORR_LUT ) / sizeof( _CALIBRATION_AE_CORR_LUT[0] ), .width = sizeof( _CALIBRATION_AE_CORR_LUT[0] )};
 static LookupTable calibration_ae_corr_pos_lut = {.ptr = _CALIBRATION_AE_CORR_POS_LUT, .rows = 1, .cols = sizeof( _CALIBRATION_AE_CORR_POS_LUT ) / sizeof( _CALIBRATION_AE_CORR_POS_LUT[0] ), .width = sizeof( _CALIBRATION_AE_CORR_POS_LUT[0] )};
@@ -1787,6 +1807,7 @@ int dynamic_sdr_calibrations_init_ov08a10(aisp_calib_info_t *calib)
     calib->calibrations[CALIBRATION_AWB_WEIGHT_H]= &calibration_awb_weight_h;
     calib->calibrations[CALIBRATION_AWB_WEIGHT_V] = &calibration_awb_weight_v;
     calib->calibrations[CALIBRATION_AE_CTL] = &calibration_ae_ctl;
+    calib->calibrations[CALIBRATION_AE_ROI] = &calibration_ae_roi;
     calib->calibrations[CALIBRATION_HIGHLIGHT_DETECT] = &calibration_highlight_detect;
     calib->calibrations[CALIBRATION_AWB_REF_REMOVE_LUT] = &calibration_awb_ref_remove_lut;
     calib->calibrations[CALIBRATION_AE_CORR_POS_LUT] = &calibration_ae_corr_pos_lut;

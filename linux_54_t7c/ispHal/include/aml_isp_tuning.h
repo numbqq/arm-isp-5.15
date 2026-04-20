@@ -25,6 +25,7 @@ typedef enum CALIBRATION_TYPE {
     CALIBRATION_AWB_CT_WGT                ,
     CALIBRATION_AWB_CT_DYN_CVRANGE        ,
     CALIBRATION_AE_CTL                    ,
+    CALIBRATION_AE_ROI                    ,
     CALIBRATION_AE_CORR_LUT               ,
     CALIBRATION_AE_CORR_POS_LUT           ,
     CALIBRATION_AE_ROUTE                  ,
@@ -174,6 +175,8 @@ typedef enum CALIBRATION_TYPE {
     CALIBRATION_AWB_WEIGHT_H              ,
     CALIBRATION_AWB_WEIGHT_V              ,
     CALIBRATION_HIGHLIGHT_DETECT          ,
+    CALIBRATION_AWB_EXT_CTL               ,
+    CALIBRATION_AWB_ADV_CT_WGT            ,
 
     CALIBRATION_TOTAL_SIZE                ,
 } CALIBRATION_TYPE_E;

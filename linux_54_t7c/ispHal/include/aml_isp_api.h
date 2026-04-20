@@ -99,7 +99,7 @@ typedef struct
     void (*pfn_cmos_again_calc_table)(int ViPipe, uint32_t *pu32AgainLin, uint32_t *pu32AgainDb);
     void (*pfn_cmos_dgain_calc_table)(int ViPipe, uint32_t *pu32DgainLin, uint32_t *pu32DgainDb);
     void (*pfn_cmos_inttime_calc_table)(int ViPipe, uint32_t pu32ExpL, uint32_t pu32ExpS, uint32_t pu32ExpVS, uint32_t pu32ExpVVS);
-
+    void (*pfn_cmos_get_ae_roi)(int ViPipe, void *ae_roi);
 } ALG_SENSOR_EXP_FUNC_S;
 
 typedef struct _LENS_PARAM_T {

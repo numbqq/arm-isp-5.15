@@ -36,6 +36,8 @@ typedef struct
     int  enWDRMode;
     ALG_SENSOR_DEFAULT_S snsAlgInfo;
     struct media_entity  * sensor_ent;
+    uint32_t  ae_roi[16][7];
+    pthread_mutex_t ae_roi_lock;
 } ISP_SNS_STATE_S;
 
 static ISP_SNS_STATE_S sensor;
@@ -47,6 +49,31 @@ void cmos_set_sensor_entity_imx585(struct media_entity * sensor_ent, int wdr)
     memset(&sensor.snsAlgInfo, 0, sizeof(ALG_SENSOR_DEFAULT_S));
     sensor.sensor_ent = sensor_ent;
     sensor.enWDRMode = wdr;
+    pthread_mutex_init(&sensor.ae_roi_lock, NULL);
+}
+
+void cmos_set_sensor_ae_roi_imx585(int ViPipe, struct sensorConfig *cfg, uint64_t ae_roi)
+{
+    pthread_mutex_lock(&sensor.ae_roi_lock);
+    memset(sensor.ae_roi, 0, sizeof(uint32_t) * 16 * 7);
+    if (ae_roi == 0) {
+        sensor.ae_roi[0][0] = 0;
+        sensor.ae_roi[0][1] = 0;
+        sensor.ae_roi[0][2] = 0;
+        sensor.ae_roi[0][3] = 0;
+        sensor.ae_roi[0][4] = 0;
+        sensor.ae_roi[0][5] = 0;
+        sensor.ae_roi[0][6] = 0;
+    } else {
+        sensor.ae_roi[0][0] = 1;
+        sensor.ae_roi[0][1] = 32;
+        sensor.ae_roi[0][2] = (ae_roi >> 48) & 0xFFFF;
+        sensor.ae_roi[0][3] = (ae_roi >> 32) & 0xFFFF;
+        sensor.ae_roi[0][4] = (ae_roi >> 16) & 0xFFFF;
+        sensor.ae_roi[0][5] = (ae_roi >>  0) & 0xFFFF;
+        sensor.ae_roi[0][6] = 400;
+    }
+    pthread_mutex_unlock(&sensor.ae_roi_lock);
 }
 
 void cmos_get_sensor_calibration_imx585(struct media_entity *sensor_ent, aisp_calib_info_t *calib)
@@ -56,6 +83,15 @@ void cmos_get_sensor_calibration_imx585(struct media_entity *sensor_ent, aisp_ca
     else
         dynamic_sdr_calibrations_init_imx585(calib);
 }
+
+
+void cmos_get_sensor_ae_roi_imx585(int ViPipe, void* ae_roi)
+{
+    pthread_mutex_lock(&sensor.ae_roi_lock);
+    memcpy(ae_roi, sensor.ae_roi, sizeof(uint32_t) * 16 * 7);
+    pthread_mutex_unlock(&sensor.ae_roi_lock);
+}
+
 
 int cmos_get_ae_default_imx585(int ViPipe, ALG_SENSOR_DEFAULT_S *pstAeSnsDft)
 {

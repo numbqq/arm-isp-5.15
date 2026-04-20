@@ -43,6 +43,7 @@ void usage(char * prog){
     INFO("    t : set or get: 1 set 0 get\n");
     INFO("    e : exposuretime\n");
     INFO("    s : saturation\n");
+    INFO("    a : ae roi\n");
 }
 const char* keyMap[] = {
     USER_SET_EXP_TIME,
@@ -50,11 +51,12 @@ const char* keyMap[] = {
     USER_SET_BRIGHTNESS,
     USER_SET_CONTRAST,
     USER_SET_SATURATION,
+    USER_SET_AE_ROI,
 };
 int main(int argc, char *argv[])
 {
     int ops_type = 0;
-    int usr_value = 33000;
+    const char* usr_value = nullptr;
     int keyMap_idx = 0;
 
     if (argc < 1) {
@@ -65,30 +67,34 @@ int main(int argc, char *argv[])
     int c;
 
     while (optind < argc) {
-        if ((c = getopt (argc, argv, "t:e:w:b:c:s:")) != -1) {
+        if ((c = getopt (argc, argv, "t:e:w:b:c:s:a:")) != -1) {
             switch (c) {
             case 't':
                 ops_type = atoi(optarg);
                 break;
             case 'e':
                 keyMap_idx = 0;
-                usr_value = atoi(optarg);
+                usr_value = optarg;
                 break;
             case 'w':
                 keyMap_idx = 1;
-                usr_value = atoi(optarg);
+                usr_value = optarg;
                 break;
             case 'b':
                 keyMap_idx = 2;
-                usr_value = atoi(optarg);
+                usr_value = optarg;
                 break;
             case 'c':
                 keyMap_idx = 3;
-                usr_value = atoi(optarg);
+                usr_value = optarg;
                 break;
             case 's':
                 keyMap_idx = 4;
-                usr_value = atoi(optarg);
+                usr_value = optarg;
+                break;
+            case 'a':
+                keyMap_idx = 5;
+                usr_value = optarg;
                 break;
             case '?':
                 usage(argv[0]);
@@ -103,7 +109,7 @@ int main(int argc, char *argv[])
     char value[PROPERTY_VALUE_MAX];
     if (ops_type == 1) {
         sprintf(value, "%d", usr_value);
-        property_set(keyMap[keyMap_idx], value);
+        property_set(keyMap[keyMap_idx], usr_value);
     } else {
         property_get_str(keyMap[keyMap_idx], value, "-1");
         MSG("get %s %s\n", keyMap[keyMap_idx], value);

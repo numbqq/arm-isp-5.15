@@ -44,11 +44,13 @@
 struct sensorConfig imx290Cfg = {
     .expFunc.pfn_cmos_fps_set = cmos_fps_set_imx290,
     .expFunc.pfn_cmos_get_alg_default = cmos_get_ae_default_imx290,
+    .expFunc.pfn_cmos_get_ae_roi = cmos_get_sensor_ae_roi_imx290,
     .expFunc.pfn_cmos_alg_update = cmos_alg_update_imx290,
     .expFunc.pfn_cmos_again_calc_table = cmos_again_calc_table_imx290,
     .expFunc.pfn_cmos_dgain_calc_table = cmos_dgain_calc_table_imx290,
     .expFunc.pfn_cmos_inttime_calc_table = cmos_inttime_calc_table_imx290,
     .cmos_set_sensor_entity = cmos_set_sensor_entity_imx290,
+    .cmos_set_sensor_ae_roi = cmos_set_sensor_ae_roi_imx290,
     .cmos_get_sensor_calibration = cmos_get_sensor_calibration_imx290,
     .sensorWidth      = 1920,
     .sensorHeight     = 1080,
@@ -61,11 +63,13 @@ struct sensorConfig imx290Cfg = {
 struct sensorConfig imx415Cfg = {
     .expFunc.pfn_cmos_fps_set = cmos_fps_set_imx415,
     .expFunc.pfn_cmos_get_alg_default = cmos_get_ae_default_imx415,
+    .expFunc.pfn_cmos_get_ae_roi = cmos_get_sensor_ae_roi_imx415,
     .expFunc.pfn_cmos_alg_update = cmos_alg_update_imx415,
     .expFunc.pfn_cmos_again_calc_table = cmos_again_calc_table_imx415,
     .expFunc.pfn_cmos_dgain_calc_table = cmos_dgain_calc_table_imx415,
     .expFunc.pfn_cmos_inttime_calc_table = cmos_inttime_calc_table_imx415,
     .cmos_set_sensor_entity = cmos_set_sensor_entity_imx415,
+    .cmos_set_sensor_ae_roi = cmos_set_sensor_ae_roi_imx415,
     .cmos_get_sensor_calibration = cmos_get_sensor_calibration_imx415,
     .sensorWidth      = 3840,
     .sensorHeight     = 2160,
@@ -78,11 +82,13 @@ struct sensorConfig imx415Cfg = {
 struct sensorConfig ov08a10Cfg = {
     .expFunc.pfn_cmos_fps_set = cmos_fps_set_ov08a10,
     .expFunc.pfn_cmos_get_alg_default = cmos_get_ae_default_ov08a10,
+    .expFunc.pfn_cmos_get_ae_roi = cmos_get_sensor_ae_roi_ov08a10,
     .expFunc.pfn_cmos_alg_update = cmos_alg_update_ov08a10,
     .expFunc.pfn_cmos_again_calc_table = cmos_again_calc_table_ov08a10,
     .expFunc.pfn_cmos_dgain_calc_table = cmos_dgain_calc_table_ov08a10,
     .expFunc.pfn_cmos_inttime_calc_table = cmos_inttime_calc_table_ov08a10,
     .cmos_set_sensor_entity = cmos_set_sensor_entity_ov08a10,
+    .cmos_set_sensor_ae_roi = cmos_set_sensor_ae_roi_ov08a10,
     .cmos_get_sensor_calibration = cmos_get_sensor_calibration_ov08a10,
     .sensorWidth      = 3840,
     .sensorHeight     = 2160,
@@ -95,11 +101,13 @@ struct sensorConfig ov08a10Cfg = {
 struct sensorConfig imx678Cfg = {
     .expFunc.pfn_cmos_fps_set = cmos_fps_set_imx678,
     .expFunc.pfn_cmos_get_alg_default = cmos_get_ae_default_imx678,
+    .expFunc.pfn_cmos_get_ae_roi = cmos_get_sensor_ae_roi_imx678,
     .expFunc.pfn_cmos_alg_update = cmos_alg_update_imx678,
     .expFunc.pfn_cmos_again_calc_table = cmos_again_calc_table_imx678,
     .expFunc.pfn_cmos_dgain_calc_table = cmos_dgain_calc_table_imx678,
     .expFunc.pfn_cmos_inttime_calc_table = cmos_inttime_calc_table_imx678,
     .cmos_set_sensor_entity = cmos_set_sensor_entity_imx678,
+    .cmos_set_sensor_ae_roi = cmos_set_sensor_ae_roi_imx678,
     .cmos_get_sensor_calibration = cmos_get_sensor_calibration_imx678,
     .sensorWidth      = 3840,
     .sensorHeight     = 2160,
@@ -112,11 +120,13 @@ struct sensorConfig imx678Cfg = {
 struct sensorConfig imx585Cfg = {
     .expFunc.pfn_cmos_fps_set = cmos_fps_set_imx585,
     .expFunc.pfn_cmos_get_alg_default = cmos_get_ae_default_imx585,
+    .expFunc.pfn_cmos_get_ae_roi = cmos_get_sensor_ae_roi_imx585,
     .expFunc.pfn_cmos_alg_update = cmos_alg_update_imx585,
     .expFunc.pfn_cmos_again_calc_table = cmos_again_calc_table_imx585,
     .expFunc.pfn_cmos_dgain_calc_table = cmos_dgain_calc_table_imx585,
     .expFunc.pfn_cmos_inttime_calc_table = cmos_inttime_calc_table_imx585,
     .cmos_set_sensor_entity = cmos_set_sensor_entity_imx585,
+    .cmos_set_sensor_ae_roi = cmos_set_sensor_ae_roi_imx585,
     .cmos_get_sensor_calibration = cmos_get_sensor_calibration_imx585,
     .sensorWidth      = 3840,
     .sensorHeight     = 2160,
@@ -159,6 +169,7 @@ void cmos_sensor_control_cb(struct sensorConfig *cfg, ALG_SENSOR_EXP_FUNC_S *stS
 {
     stSnsExp->pfn_cmos_alg_update = cfg->expFunc.pfn_cmos_alg_update;
     stSnsExp->pfn_cmos_get_alg_default = cfg->expFunc.pfn_cmos_get_alg_default;
+    stSnsExp->pfn_cmos_get_ae_roi = cfg->expFunc.pfn_cmos_get_ae_roi;
     stSnsExp->pfn_cmos_again_calc_table = cfg->expFunc.pfn_cmos_again_calc_table;
     stSnsExp->pfn_cmos_dgain_calc_table = cfg->expFunc.pfn_cmos_dgain_calc_table;
     stSnsExp->pfn_cmos_inttime_calc_table = cfg->expFunc.pfn_cmos_inttime_calc_table;
@@ -168,6 +179,12 @@ void cmos_sensor_control_cb(struct sensorConfig *cfg, ALG_SENSOR_EXP_FUNC_S *stS
 void cmos_set_sensor_entity(struct sensorConfig *cfg, struct media_entity *sensor_ent, int wdr)
 {
     (cfg->cmos_set_sensor_entity)(sensor_ent, wdr);
+}
+
+void cmos_set_sensor_ae_roi(int cam_id, struct sensorConfig *cfg, uint64_t ae_roi)
+{
+    if (cfg->cmos_set_sensor_ae_roi)
+        (cfg->cmos_set_sensor_ae_roi)(cam_id, cfg, ae_roi);
 }
 
 void cmos_get_sensor_calibration(struct sensorConfig *cfg, struct media_entity * sensor_ent, aisp_calib_info_t *calib)
