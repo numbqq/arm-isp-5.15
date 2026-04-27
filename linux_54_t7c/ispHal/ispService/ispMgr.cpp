@@ -150,6 +150,13 @@ int IspMgr::configure(struct media_stream *stream, int wdr, aisp_calib_info_t *o
         ERR("Failed to matchSensorConfig");
         return -1;
     }
+
+    mLensConfig = matchLensConfigByStream(mMediaStream);
+    if (mLensConfig != nullptr) {
+        lens_set_entity(mLensConfig, mMediaStream->lens_ent);
+        lens_control_cb(mLensConfig, &mPstAlgCtx.stLensFunc);
+    }
+
     if (wdr == WDR_MODE_2To1_FRAME) {
         cmos_set_sensor_entity(mSensorConfig, mMediaStream->sensor_ent, 1);
         mWdrEnable = true;

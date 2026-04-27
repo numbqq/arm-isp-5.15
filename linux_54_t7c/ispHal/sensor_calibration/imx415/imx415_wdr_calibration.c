@@ -63,7 +63,7 @@ static int32_t _CALIBRATION_TOP_CTL[50] = {
     2, // awb stat switch 0:from FE 1:from GE 2:before WB 3:after WB 4:from DRC 5 or else:from peak
     1, // ae stat enable 0:off 1:on
     1, // ae stat switch 0:from GE 1:from LSC 2:before DRC 3:after DRC
-    0, // af stat enable 0:off 1:on
+    1, // af stat enable 0:off 1:on
     0, // af stat switch 0:from SNR 1:from DMS 2or3:from peak
     1, // WDR stat enable 0:off 1:on
     0, // debug path output 0:off 1:on
@@ -282,7 +282,7 @@ static uint32_t _CALIBRATION_AF_CTL[23] = {
     8000,  //af_exit_th;
     105000, //af_caf_trigger_th;
     4000,  //af_caf_stable_th;
-    1,//af_print_debug;
+    0,//af_print_debug;
     1,//af_mode;0:AF, 1:CAF, 2:MANUAL, 3:CLBT;
 };
 
