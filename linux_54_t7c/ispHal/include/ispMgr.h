@@ -101,6 +101,7 @@ class IspMgr {
     bool                               mWdrEnable;
     struct media_stream*               mMediaStream  = nullptr;
     struct sensorConfig*               mSensorConfig = nullptr;
+    struct lensConfig*                 mLensConfig   = nullptr;
     int                                mFlushFd[2];
     std::vector<struct media_entity *> mPollingDevices;
     std::vector<struct media_entity *> mActiveDevices;
