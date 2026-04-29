@@ -164,7 +164,7 @@ static int32_t _CALIBRATION_AE_CTL[32] = {
     16,       // max exposure ratio limit, this is times.
     (200*(1<<10)),  //  Light intensity at full exposure and zero gain , exp: 128lux = 128*(1<<10)
     2,       //feedback delay frame numbers of stats info in current system
-    0,       //ae debug:bit[0] target, [1] ratio, [2] exposure calculate
+    2,       //ae debug:bit[0] target, [1] ratio, [2] exposure calculate
 };
 
 static uint32_t _CALIBRATION_AE_ROI[16][7] = {
