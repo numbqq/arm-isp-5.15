@@ -108,8 +108,8 @@ int cmos_get_ae_default_imx678(int ViPipe, ALG_SENSOR_DEFAULT_S *pstAeSnsDft)
         sensor.snsAlgInfo.total.width = 550; //HMAX register value
         sensor.snsAlgInfo.total.height = 2250; // VMAX register value
         sensor.snsAlgInfo.fps = 30*256;
-	    sensor.snsAlgInfo.lines_per_second = sensor.snsAlgInfo.total.height * sensor.snsAlgInfo.fps*2 / 256; //lines_per_second：vts * fps，Hardware-related values
-	    sensor.snsAlgInfo.pixels_per_line = sensor.snsAlgInfo.total.width; //pixels_per_line： Sensor HTS, using HMAX
+        sensor.snsAlgInfo.lines_per_second = sensor.snsAlgInfo.total.height * sensor.snsAlgInfo.fps*2 / 256; //lines_per_second：vts * fps，Hardware-related values
+        sensor.snsAlgInfo.pixels_per_line = sensor.snsAlgInfo.total.width; //pixels_per_line： Sensor HTS, using HMAX
         sensor.snsAlgInfo.integration_time_min = 3<<SHUTTER_TIME_SHIFT;
         sensor.snsAlgInfo.integration_time_max = (141 - 3) << SHUTTER_TIME_SHIFT;
         sensor.snsAlgInfo.integration_time_long_max = (sensor.snsAlgInfo.total.height*2 - (141 + 3)) << SHUTTER_TIME_SHIFT;
@@ -121,8 +121,8 @@ int cmos_get_ae_default_imx678(int ViPipe, ALG_SENSOR_DEFAULT_S *pstAeSnsDft)
         sensor.snsAlgInfo.total.width = 550; //HMAX register value
         sensor.snsAlgInfo.total.height = 2250; // VMAX register value
 
-	    sensor.snsAlgInfo.lines_per_second = sensor.snsAlgInfo.total.height * sensor.snsAlgInfo.fps / 256; //lines_per_second：vts * fps，Hardware-related values
-	    sensor.snsAlgInfo.pixels_per_line = sensor.snsAlgInfo.total.width; //pixels_per_line： Sensor HTS, using HMAX
+        sensor.snsAlgInfo.lines_per_second = sensor.snsAlgInfo.total.height * sensor.snsAlgInfo.fps / 256; //lines_per_second：vts * fps，Hardware-related values
+        sensor.snsAlgInfo.pixels_per_line = sensor.snsAlgInfo.total.width; //pixels_per_line： Sensor HTS, using HMAX
         sensor.snsAlgInfo.integration_time_min = 1 << SHUTTER_TIME_SHIFT;
         sensor.snsAlgInfo.integration_time_max = (sensor.snsAlgInfo.total.height - 3) << SHUTTER_TIME_SHIFT;
         sensor.snsAlgInfo.integration_time_long_max = (sensor.snsAlgInfo.total.height - 3) << SHUTTER_TIME_SHIFT;
@@ -273,19 +273,22 @@ void cmos_fps_set_imx678(int ViPipe, float f32Fps, ALG_SENSOR_DEFAULT_S *pstAeSn
 
     if (sensor.enWDRMode == 1 ) {
      //min fps limit
-    	if (fpsCtrl.value < 15) {
-        	return;
+        if (fpsCtrl.value < 15) {
+            return;
         }
     }
     //update vmax relative parameters
-    sensor.snsAlgInfo.total.height = ( 2250 * 30 )/fpsCtrl.value;
-    sensor.snsAlgInfo.fps = fpsCtrl.value*256;
+
     if (sensor.enWDRMode == 1) {
+        sensor.snsAlgInfo.total.height = ( 2250 * 30 )/fpsCtrl.value;
+        sensor.snsAlgInfo.fps = fpsCtrl.value*256;
         sensor.snsAlgInfo.integration_time_max = (141 - 3) << SHUTTER_TIME_SHIFT;
         sensor.snsAlgInfo.integration_time_long_max = (sensor.snsAlgInfo.total.height*2 - (141 + 3)) << SHUTTER_TIME_SHIFT;
         sensor.snsAlgInfo.integration_time_limit = (141 - 3)<<SHUTTER_TIME_SHIFT;
         sensor.snsAlgInfo.lines_per_second = sensor.snsAlgInfo.total.height * fpsCtrl.value*2;
     } else {
+        sensor.snsAlgInfo.total.height = ( 2250 * 60 )/fpsCtrl.value;
+        sensor.snsAlgInfo.fps = fpsCtrl.value*256;
         sensor.snsAlgInfo.integration_time_max = (sensor.snsAlgInfo.total.height - 3) << SHUTTER_TIME_SHIFT;
         sensor.snsAlgInfo.integration_time_long_max = (sensor.snsAlgInfo.total.height - 3) << SHUTTER_TIME_SHIFT;
         sensor.snsAlgInfo.integration_time_limit = (sensor.snsAlgInfo.total.height - 3) << SHUTTER_TIME_SHIFT;
